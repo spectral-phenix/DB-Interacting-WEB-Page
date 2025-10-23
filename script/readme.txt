@@ -115,11 +115,5 @@ If your project uses a database, also make sure the required dependencies are in
 ---
 
 ## Author
-
-Project developed as part of the NSI (Numérique et Sciences Informatiques) course.
-Created by: [Your Name Here]
-
----
-
-Would you like me to make it Markdown-compatible (for GitHub `README.md`) while keeping the same plain-text tone?
+Created by: spectral-phenix alias Elvin.T
 
