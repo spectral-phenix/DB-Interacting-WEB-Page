@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet NSI</title>
+    
+    <!-- Chargement du fichier CSS -->
+    <link id="theme-stylesheet" rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}">
+</head>
+<body>
+    <h1>Projet Python-BdD</h1>
+
+    <form method="post">
+        <!-- Bloc permettant de choisir les colonnes à afficher -->
+        <div class="columns_box">
+            <u><h2>Colonnes à afficher :</h2></u>
+            
+            <!-- Boutons pour cocher/décocher toutes les cases -->
+            <button class="check_button" type="button" onclick="cocherTout()">Tout cocher</button>
+            <button class="uncheck_button" type="button" onclick="decocherTout()">Tout décocher</button>
+            <br><br>
+
+            <!-- Boucle qui génère dynamiquement la liste des colonnes disponibles -->
+            {% for column in available_columns %}
+            <label>
+                <input type="checkbox" name="columns" value="{{ column }}" {% if column in selected_columns %}checked{% endif %}>
+                {{ column_translations[column] if column in column_translations else column }}
+            </label><br>
+            {% endfor %}
+        </div>
+        
+        <!-- Bloc pour définir des conditions sur les colonnes -->
+        <u><h2>Conditions :</h2></u>
+        <div id="conditions">
+            {% for condition in conditions %}
+            <div id="condition_{{ loop.index }}" class="condition">
+                
+                <!-- Sélection de la colonne concernée par la condition -->
+                <label for="column_{{ loop.index }}">Colonne :</label>
+                <select id="column_{{ loop.index }}" name="column_{{ loop.index }}" onchange="mettreAJourPlaceholder({{ loop.index }})" required>
+                    {% for column in available_columns %}
+                    <option value="{{ column }}" {% if column == condition.column %}selected{% endif %}>
+                        {{ column_translations[column] if column in column_translations else column }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <!-- Champ de saisie pour la valeur de la condition -->
+                <label for="value_{{ loop.index }}">Valeur :</label>
+                <input type="text" id="value_{{ loop.index }}" name="value_{{ loop.index }}" 
+                       value="{{ condition.value }}" 
+                       placeholder="{{ column_translations.get(condition.column, '>2000, Comedy, etc.') }}" 
+                       required>
+
+                <!-- Bouton pour supprimer une condition -->
+                <button type="button" onclick="supprimerCondition({{ loop.index }})" class="delete-btn">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Bouton pour ajouter une nouvelle condition -->
+        <button type="button" onclick="ajouterCondition()">Ajouter une condition</button>
+        <br><br>
+
+        <!-- Bouton pour soumettre le formulaire -->
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <!-- Affichage d'un message d'erreur si nécessaire -->
+    {% if error %}
+    <div class="error-message">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Affichage des résultats si la requête retourne des données -->
+    {% if results %}
+        {% if results.columns and results.rows %}
+        <h2>Résultats :</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    {% for column in results.columns %}
+                    <th 
+                        class="sortable" 
+                        data-column="{{ column }}" 
+                        data-current-order="{{ 'none' if order_by_column != column else order_by_direction }}">
+                        {{ column_translations[column] if column in column_translations else column }}
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for row in results.rows %}
+                <tr>
+                    {% for cell in row %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif results == "Aucun résultat trouvé." %}
+        <div class="no-results">
+            <p>{{ results }}</p>
+        </div>
+        {% else %}
+        <p>{{ results }}</p>
+        {% endif %}
+    {% endif %}
+
+    <script>
+        // Variable pour suivre le nombre de conditions existantes
+        let conditionCount = {{ conditions|length if conditions else 0 }};
+
+        // Fonction pour cocher toutes les cases à cocher
+        function cocherTout() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = true);
+        }
+
+        // Fonction pour décocher toutes les cases à cocher
+        function decocherTout() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+        }
+    </script>
+
+    <!-- Inclusion du script JS externe -->
+    <script src="{{ url_for('static', filename='js/index_scripts.js') }}"></script>
+</body>
+</html>
