@@ -110,7 +110,7 @@ If your project uses a database, also make sure the required dependencies are in
 
 * Python (Flask)
 * HTML / CSS / JavaScript
-* SQLite (or another database depending on the project)
+* WampServer (or another database depending on the project)
 
 ---
 
@@ -122,3 +122,4 @@ Created by: [Your Name Here]
 ---
 
 Would you like me to make it Markdown-compatible (for GitHub `README.md`) while keeping the same plain-text tone?
+
